@@ -1,39 +1,66 @@
-import React from 'react'
-import { Link, Route, Switch } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import './index.scss'
+import ReactMapGL, { Marker, NavigationControl } from 'react-map-gl'
 
-function App() {
+export function App() {
+  const [viewport, setViewport] = useState({
+    width: 500,
+    height: 400,
+    latitude: 0,
+    longitude: 0,
+    zoom: 0,
+  })
+
+  const [earthquakes, setEarthquakes] = useState([])
+
+  useEffect(() => {
+    async function loadEarthquakes() {
+      const url = ('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_day.geojson')
+      const response = await fetch(url)
+      const json = await response.json()
+      setEarthquakes(json.features)
+    }
+    loadEarthquakes()
+    
+  }, [])
+
   return (
     <>
       <header>
-        <h1>Welcome to my SPA</h1>
-        <nav>
-          <ul>
-            <li>
-              <Link to="/">Go Home</Link>
-            </li>
-            <li>
-              <Link to="/1">Page 1</Link>
-            </li>
-            <li>
-              <Link to="/2">Page 2</Link>
-            </li>
-          </ul>
-        </nav>
+        <div className="d-flex justify-content-center display-2 hero-text">Earthquake!</div>
       </header>
-      <Switch>
-        <Route exact path="/">
-          Home
-        </Route>
-        <Route exact path="/1">
-          Page 1
-        </Route>
-        <Route exact path="/2">
-          Page 2
-        </Route>
-        <Route path="*">Not Found</Route>
-      </Switch>
+      <main>
+        <section className="list">
+          <ul>
+            {earthquakes.map((earthquake) => (
+              <li key={earthquake.id}>{earthquake.properties.place},{earthquake.geometry.coordinates[1]},{earthquake.geometry.coordinates[0]}</li>
+            ))}
+          </ul>
+        </section>
+        <section className="map">
+          <ReactMapGL
+            style={{ position: 'absolute' }}
+            {...viewport}
+            onViewportChange={setViewport}
+            mapboxApiAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
+            >
+              {earthquakes.map((earthquake) => (
+                <Marker
+                  key={earthquake.id}
+                  latitude={earthquake.geometry.coordinates[1]}
+                  longitude={earthquake.geometry.coordinates[0]}
+                >
+                   <span role="img" aria-label="taco">
+                    &#x1F4cd;
+                  </span>
+                </Marker>
+              ))}
+              <div style={{ position: 'absolute', right: 0 }}>
+                <NavigationControl />
+              </div>
+            </ReactMapGL>
+        </section>
+      </main>
     </>
   )
 }
-
-export default App

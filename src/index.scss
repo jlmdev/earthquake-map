@@ -9,4 +9,35 @@ html {
 body {
   margin: 0;
   min-height: 100%;
+  background-image: url('./components/images/earthquake.jpg');
+  background-size: cover;
+}
+
+header {
+  height: 120px;
+  // border: 1px solid red;
+  background-color: rgba($color: #f5f5f5, $alpha: 0.5);
+}
+
+.hero-text {
+  color: black;
+  font-weight: bold;
+}
+
+main {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background-color: rgba($color: #f5f5f5, $alpha: 0.5);
+}
+
+.list {
+  display: block;
+  width: 100%;
+  color: blue;
+  font-size: 1.5rem;
+}
+
+.map {
+  width: 500px;
+  padding-left: 50px;
 }
